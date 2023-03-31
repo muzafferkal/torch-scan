@@ -89,7 +89,7 @@ def format_line_str(
 ) -> List[str]:
 
     if not isinstance(col_w, list):
-        col_w = [None] * 7  # type: ignore[list-item]
+        col_w = [None] * 9  # type: ignore[list-item]
 
     max_len = col_w[0] + 3 if isinstance(col_w[0], int) else 100
     line_str = [
@@ -101,11 +101,14 @@ def format_line_str(
         format_s(f"{layer['grad_params'] + layer['nograd_params'] + layer['num_buffers']:,}", col_w[3], col_w[3])
     )
 
+    line_str.append(format_s(f"{layer['flops']:}", col_w[4], col_w[4]))
+    line_str.append(format_s(f"{layer['macs']:}", col_w[5], col_w[5]))
+
     if receptive_field:
-        line_str.append(format_s(f"{layer['rf']:.0f}", col_w[4], col_w[4]))
+        line_str.append(format_s(f"{layer['rf']:.0f}", col_w[6], col_w[6]))
         if effective_rf_stats:
-            line_str.append(format_s(f"{layer['s']:.0f}", col_w[5], col_w[5]))
-            line_str.append(format_s(f"{layer['p']:.0f}", col_w[6], col_w[6]))
+            line_str.append(format_s(f"{layer['s']:.0f}", col_w[7], col_w[7]))
+            line_str.append(format_s(f"{layer['p']:.0f}", col_w[8], col_w[8]))
 
     return line_str
 
@@ -128,8 +131,8 @@ def format_info(
     margin = 4
     # Dynamic col width
     # Init with headers
-    headers = ["Layer", "Type", "Output Shape", "Param #", "Receptive field", "Effective stride", "Effective padding"]
-    max_w = [27, 20, 25, 15, 15, 16, 17]
+    headers = ["Layer", "Type", "Output Shape", "Param #", "FLOPs", "MACs", "Receptive field", "Effective stride", "Effective padding"]
+    max_w = [27, 20, 35, 15, 15, 15, 15, 16, 17]
     col_w = [len(s) for s in headers]
     for layer in module_info["layers"]:
         col_w = [
@@ -144,11 +147,11 @@ def format_info(
     col_w = [min(v, max_v) for v, max_v in zip(col_w, max_w)]
 
     if not receptive_field:
-        col_w = col_w[:4]
-        headers = headers[:4]
+        col_w = col_w[:6]
+        headers = headers[:6]
     elif not effective_rf_stats:
-        col_w = col_w[:5]
-        headers = headers[:5]
+        col_w = col_w[:7]
+        headers = headers[:7]
 
     # Define separating lines
     line_length = sum(col_w) + (len(col_w) - 1) * margin
