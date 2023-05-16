@@ -180,6 +180,7 @@ def crawl_module(
 
                 # Update layer information
                 info[fw_idx]["output_shape"] = (-1, [dim for t in (*out,) for dim in t.shape[1:]])
+                info[fw_idx]["input_shape"] = (-1, [dim for t in (*inputs,) for dim in t.shape[1:]])
                 # Add them, since some modules can be used several times
                 info[fw_idx]["flops"] = tot_flops
                 info[fw_idx]["macs"] = tot_macs
